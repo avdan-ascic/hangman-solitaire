@@ -7,7 +7,7 @@ import Word from "./Word";
 import { showNotification as show } from "../helpers/Helpers";
 import Notification from "../components/Notification";
 import Popup from "../components/Popup";
-import { getWords } from "../helpers/Helpers";
+import axios from "axios";
 
 const Game = () => {
   const [start, setStart] = useState(true);
@@ -16,15 +16,22 @@ const Game = () => {
   const [showNotification, setShowNotification] = useState(false);
   const [selectedWord, setSelectedWord] = useState("");
 
-  const fetchNewWord = async () => {
-    setSelectedWord(await getWords());
+  const fetchNewWord = () => {
+    axios
+      .get(`https://random-word-form.herokuapp.com/random/noun`)
+      .then((res) => {
+        console.log(res.data);
+        setSelectedWord(res.data[0]);
+      });
+    setCorrectLetters([]);
+    setWrongLetters([]);
+    setShowNotification(false);
   };
 
+  
   useEffect(() => {
-    if (start) {
-      fetchNewWord();
-    }
-  }, [start]);
+    fetchNewWord();
+  }, []);
 
   const playAgain = () => {
     setStart(true);
@@ -39,7 +46,6 @@ const Game = () => {
       if (start && keyCode >= 65 && keyCode <= 90) {
         const letter = key.toLowerCase();
         console.log(event);
-
         if (selectedWord.includes(letter)) {
           if (!correctLetters.includes(letter)) {
             setCorrectLetters((currentLetters) => [...currentLetters, letter]);
@@ -78,11 +84,9 @@ const Game = () => {
             playAgain={playAgain}
           />
         )}
-
         <Notification showNotification={showNotification} />
       </div>
     </Fragment>
   );
 };
-
 export default Game;
