@@ -10,7 +10,7 @@ import Popup from "../components/Popup";
 import axios from "axios";
 
 const Game = () => {
-  const [start, setStart] = useState(true);
+  const [start, setStart] = useState(false);
   const [correctLetters, setCorrectLetters] = useState([]);
   const [wrongLetters, setWrongLetters] = useState([]);
   const [showNotification, setShowNotification] = useState(false);
@@ -28,30 +28,25 @@ const Game = () => {
     }
   };
 
-  useEffect(() => {
-    let isMounted = true;
-    const getData = async () => {
-      const newWord = await fetchNewWord();
-      if (isMounted) {
-        setSelectedWord(newWord);
-        setCorrectLetters([]);
-        setWrongLetters([]);
-        setShowNotification(false);
-      }
-    };
-    if (start) {
-      getData();
-    }
-
-    return () => {
-      isMounted = false;
-    };
-  }, [start]);
+  const getData = async () => {
+    const newWord = await fetchNewWord();
+    console.log(newWord)
+    setSelectedWord(newWord);
+    setCorrectLetters([]);
+    setWrongLetters([]);
+    setShowNotification(false);
+    setStart(true);
+  };
+  
+  const handleStartClick = () => {
+    getData();
+  };
 
   const playAgain = () => {
     setStart(true);
     setCorrectLetters([]);
     setWrongLetters([]);
+    getData()
   };
 
   useEffect(() => {
@@ -59,7 +54,6 @@ const Game = () => {
       const { key, keyCode } = event;
       if (start && keyCode >= 65 && keyCode <= 90) {
         const letter = key.toLowerCase();
-        console.log(event);
         if (selectedWord.includes(letter)) {
           if (!correctLetters.includes(letter)) {
             setCorrectLetters((currentLetters) => [...currentLetters, letter]);
@@ -87,8 +81,10 @@ const Game = () => {
         <Figure wrongLetters={wrongLetters} />
         <WrongLetters wrongLetters={wrongLetters} />
         <Word selectedWord={selectedWord} correctLetters={correctLetters} />
+        {!selectedWord &&  <button className="btn" onClick={handleStartClick}>Start Game</button>}
       </div>
       <div>
+      
         {selectedWord ? (
           <Popup
             correctLetters={correctLetters}

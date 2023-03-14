@@ -15,7 +15,6 @@ body {
   overflow: hidden;
 }
 
-
 .game-container {
   padding: 20px 30px;
   position: relative;
@@ -24,3 +23,13 @@ body {
   width: 850px;
 }
 
+.btn {
+  position: absolute;
+  left: 20rem;
+  bottom: 0;
+  font-size: 2rem;
+  padding: 10px 35px;
+  border-radius: 10px;
+  background-color: #416f71;
+  color: white;
+}
