@@ -16,28 +16,42 @@ const Game = () => {
   const [showNotification, setShowNotification] = useState(false);
   const [selectedWord, setSelectedWord] = useState("");
 
-  const fetchNewWord = () => {
-    axios
-      .get(`https://random-word-form.herokuapp.com/random/noun`)
-      .then((res) => {
-        console.log(res.data);
-        setSelectedWord(res.data[0]);
-      });
-    setCorrectLetters([]);
-    setWrongLetters([]);
-    setShowNotification(false);
+  const fetchNewWord = async () => {
+    try {
+      const res = await axios.get(
+        "https://random-word-form.herokuapp.com/random/noun"
+      );
+      return res.data[0];
+    } catch (error) {
+      console.log(error);
+      return "";
+    }
   };
 
-  
   useEffect(() => {
-    fetchNewWord();
-  }, []);
+    let isMounted = true;
+    const getData = async () => {
+      const newWord = await fetchNewWord();
+      if (isMounted) {
+        setSelectedWord(newWord);
+        setCorrectLetters([]);
+        setWrongLetters([]);
+        setShowNotification(false);
+      }
+    };
+    if (start) {
+      getData();
+    }
+
+    return () => {
+      isMounted = false;
+    };
+  }, [start]);
 
   const playAgain = () => {
     setStart(true);
     setCorrectLetters([]);
     setWrongLetters([]);
-    fetchNewWord();
   };
 
   useEffect(() => {
@@ -75,7 +89,7 @@ const Game = () => {
         <Word selectedWord={selectedWord} correctLetters={correctLetters} />
       </div>
       <div>
-        {selectedWord && (
+        {selectedWord ? (
           <Popup
             correctLetters={correctLetters}
             wrongLetters={wrongLetters}
@@ -83,10 +97,11 @@ const Game = () => {
             setStart={setStart}
             playAgain={playAgain}
           />
-        )}
+        ) : null}
         <Notification showNotification={showNotification} />
       </div>
     </Fragment>
   );
 };
+
 export default Game;

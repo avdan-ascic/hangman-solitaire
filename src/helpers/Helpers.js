@@ -19,11 +19,3 @@ export const checkWin = (correct, wrong, word) => {
   return status;
 };
 
-// export const getWords = async () => {
-//   const response = await fetch(
-//     "https://random-word-form.herokuapp.com/random/noun"
-//   );
-//   const [word] = await response.json();
-//   console.log(word);
-//   return word;
-// };
